@@ -10,19 +10,23 @@ import SwiftUI
 struct ContentView: View {
     @ObservedObject var viewModel: EmojiMemoryGame
     var body: some View {
-        Grid(viewModel.cards) { card in
-            CardView(card: card).onTapGesture {
-                viewModel.choose(card: card)
+        VStack {
+            Text(viewModel.theme.name)
+            Text("\(viewModel.score)")
+            Grid(viewModel.cards) { card in
+                CardView(card: card, themeColor: viewModel.theme.color).onTapGesture {
+                    viewModel.choose(card: card)
+                }
+                .padding()
             }
-            .padding()
+            Button("New Game", action: viewModel.newGame)
         }
-
     }
 }
 
 struct CardView: View {
     var card: MemoryGame<String>.Card
-    
+    var themeColor: Color
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -32,7 +36,7 @@ struct CardView: View {
                     Text(card.content)
                 } else {
                     if !card.isMatched {
-                        RoundedRectangle(cornerRadius: cornerRadius).fill(Color.red)
+                        RoundedRectangle(cornerRadius: cornerRadius).fill(themeColor)
                     }
                 }
             }
@@ -43,7 +47,6 @@ struct CardView: View {
     // MARK: - Drawing Constants
     let cornerRadius: CGFloat = 10
     let edgeLineWidth: CGFloat = 3
-    
     func fontSize(for size: CGSize) -> CGFloat {
         return min(size.width, size.height) * 0.75
     }
